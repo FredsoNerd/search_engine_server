@@ -5,9 +5,10 @@ get_btn.onclick = async function() {
   
   fetch(URL)
     .then(function (response) {
-      return response.json();
+        return response.json();
     })
     .then(function (data) {
-      document.getElementById('output').innerHTML = data;
+        var obj = JSON.parse(data);
+        document.getElementById('output').innerHTML = obj.res;
     })
 }
