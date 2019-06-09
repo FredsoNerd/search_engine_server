@@ -20,7 +20,7 @@ string show_more(int *&res, int len_r, int &pos){
 	aux = "\n.. About " + to_string(len_r) + " results";
 	// exibimos os resultados a cada 020
 	// geramos o link d abrir as paginas
-	for(; pos < end; pos++){
+	for(; pos < len_r; pos++){
 		aux = aux + "<a href =\"http://localhost:8080/query?text=cpp_server_open_page";
 		aux = aux + to_string(pos + 1) + "\">" + get_title(pos, res) + "</a></br>";
 		
@@ -45,7 +45,7 @@ string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 		for(int i = 21; i < query.size(); i++)
 			aux = aux + query[i];
 		
-		return open_page(aux, res);
+		return get_page(aux, res);
 	}
 	
 	// o caso geral fazemos as buscas pela engine
@@ -108,7 +108,7 @@ int main() {
         auto query_fields = request->parse_query_string();
         auto it = query_fields.find("text"); 
         // criamos html do div 'output'
-		stream = make_html(trie, it->second, res, len_r, pos);
+		stream << make_html(trie, it->second, res, len_r, pos);
         // enviamos para o javascript
         response->write(stream);
     };
