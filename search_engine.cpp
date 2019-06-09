@@ -211,7 +211,7 @@ class Trie{
 		vector<string> v = suggestion(input, 3);
 		string out = "Did you mean:\n";
 		for(const auto& x: v){
-			out = out + "\t "+ x + "\n";
+			out = out + "     "+ x + "\n";
 		}
 		return out;
 	}
