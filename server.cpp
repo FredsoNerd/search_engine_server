@@ -14,63 +14,22 @@ Trie trie;
 int pos = 0;
 int len_r = 0;
 
-int main() {
-	// Carregamos a Trie contendo os dados
-	trie = Trie("teste.txt");
-	
-    // HTTP-server at port 8080 using 1 thread
-    // Unless you do more heavy non-threaded processing in the resources,
-    // 1 thread is usually faster than several threads
-    HttpServer server;
-    server.config.port = 8080;
-  
-    // GET-example for the path /query?text={text}
-    // Responds with request-information
-    server.resource["^/query$"]["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-        // ADICIONAMOS OS NOSSOS CÓDIGOS AQUI //
-		stringstream stream;
-        auto query_fields = request->parse_query_string();
-        auto it = query_fields.find("text"); 
-        // criamos html do div 'output'
-		stream = make_html(trie, it->second, res, len_r, pos);
-        // enviamos para o javascript
-        response->write(stream);
-    };
-  
-    // GET-example for the path /query?text={text}
-    // Responds with request-information
-    server.default_resource["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-        auto path = "./web/"+request->path;
-
-        SimpleWeb::CaseInsensitiveMultimap header;
-
-        std::ifstream ifs(path, ifstream::in | ios::binary | ios::ate);
-        auto length = ifs.tellg();
-        ifs.seekg(0, ios::beg);
-        stringstream stream;
-        stream << ifs.rdbuf();
-
-        header.emplace("Content-Length", to_string(length));
-        response->write(header);
-        response->write(stream.str().c_str(), length);
-    };
-
-    server.on_error = [](shared_ptr<HttpServer::Request> /*request*/, const SimpleWeb::error_code & /*ec*/) {
-        // Handle errors here
-        // Note that connection timeouts will also call this handle with ec set to SimpleWeb::errc::operation_canceled
-    };
-
-    thread server_thread([&server]() {
-        // Start server
-        server.start();
-    });
-
-    // Wait for server to start so that the client can connect
-    this_thread::sleep_for(chrono::seconds(1));
-  
-    server_thread.join();
+string show_more(int *&res, int len_r, int &pos){
+	// abrimos mais 20 titulos a ser mostrados
+	string aux;
+	aux = "\n.. About " + to_string(len_r) + " results";
+	// exibimos os resultados a cada 020
+	// geramos o link d abrir as paginas
+	for(; pos < end; pos++){
+		aux = aux + "<a href =\"http://localhost:8080/query?text=cpp_server_open_page";
+		aux = aux + to_string(pos + 1) + "\">" + get_title(pos, res) + "</a></br>";
+		
+		if(pos + 1 == len_r || (pos > 0 && (pos + 1) % 20 == 0)){
+			return aux;
+		}
+	}
+	return aux;
 }
-
 string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 	string head = "";
 	string aux = query + "####################";
@@ -130,19 +89,60 @@ string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 	
 	return "Um erro inesperado ocorreu!";
 }
-string show_more(int *&res, int len_r, int &pos){
-	// abrimos mais 20 titulos a ser mostrados
-	string aux;
-	aux = "\n.. About " + to_string(len_r) + " results";
-	// exibimos os resultados a cada 020
-	// geramos o link d abrir as paginas
-	for(; pos < end; pos++){
-		aux = aux + "<a href =\"http://localhost:8080/query?text=cpp_server_open_page";
-		aux = aux + to_string(pos + 1) + "\">" + get_title(pos, res) + "</a></br>";
-		
-		if(pos + 1 == len_r || (pos > 0 && (pos + 1) % 20 == 0)){
-			return aux;
-		}
-	}
-	return aux;
+
+int main() {
+	// Carregamos a Trie contendo os dados
+	trie = Trie("teste.txt");
+	
+    // HTTP-server at port 8080 using 1 thread
+    // Unless you do more heavy non-threaded processing in the resources,
+    // 1 thread is usually faster than several threads
+    HttpServer server;
+    server.config.port = 8080;
+  
+    // GET-example for the path /query?text={text}
+    // Responds with request-information
+    server.resource["^/query$"]["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+        // ADICIONAMOS OS NOSSOS CÓDIGOS AQUI //
+		stringstream stream;
+        auto query_fields = request->parse_query_string();
+        auto it = query_fields.find("text"); 
+        // criamos html do div 'output'
+		stream = make_html(trie, it->second, res, len_r, pos);
+        // enviamos para o javascript
+        response->write(stream);
+    };
+  
+    // GET-example for the path /query?text={text}
+    // Responds with request-information
+    server.default_resource["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+        auto path = "./web/"+request->path;
+
+        SimpleWeb::CaseInsensitiveMultimap header;
+
+        std::ifstream ifs(path, ifstream::in | ios::binary | ios::ate);
+        auto length = ifs.tellg();
+        ifs.seekg(0, ios::beg);
+        stringstream stream;
+        stream << ifs.rdbuf();
+
+        header.emplace("Content-Length", to_string(length));
+        response->write(header);
+        response->write(stream.str().c_str(), length);
+    };
+
+    server.on_error = [](shared_ptr<HttpServer::Request> /*request*/, const SimpleWeb::error_code & /*ec*/) {
+        // Handle errors here
+        // Note that connection timeouts will also call this handle with ec set to SimpleWeb::errc::operation_canceled
+    };
+
+    thread server_thread([&server]() {
+        // Start server
+        server.start();
+    });
+
+    // Wait for server to start so that the client can connect
+    this_thread::sleep_for(chrono::seconds(1));
+  
+    server_thread.join();
 }
