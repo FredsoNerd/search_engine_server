@@ -21,8 +21,8 @@ string show_more(int *&res, int len_r, int &pos){
 	// exibimos os resultados a cada 020
 	// geramos o link d abrir as paginas
 	for(; pos < len_r; pos++){
-		aux = aux + "<a href =javascript:query(cpp_server_open_page";
-		aux = aux + to_string(pos + 1) + "); > Title: ";
+		aux = aux + "<a href =javascript:query_link(\'cpp_server_open_page";
+		aux = aux + to_string(pos) + "\'); > Title: ";
 		aux = aux + get_title(pos, res) + "</a></br>";
 
 		if(pos + 1 == len_r || (pos > 0 && (pos + 1) % 20 == 0)){
@@ -43,10 +43,12 @@ string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 	else if(head == "cpp_server_open_page"){
 		// abrimos e retornamos o artigo de dadoId
 		aux = "";
-		for(int i = 21; i < query.size(); i++)
+		for(int i = 20; i < query.size(); i++)
 			aux = aux + query[i];
 
-		return "MINHA PAGINA TOP";
+		cout << aux << endl;
+
+		return "page: " + get_page(aux, res);
 	}
 
 	// o caso geral fazemos as buscas pela engine
@@ -93,7 +95,7 @@ string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 
 int main() {
 	// Carregamos a Trie contendo os dados
-	trie = Trie("teste.txt");
+	trie = Trie("index.txt");
 
     // HTTP-server at port 8080 using 1 thread
     // Unless you do more heavy non-threaded processing in the resources,

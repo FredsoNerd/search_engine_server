@@ -1,7 +1,7 @@
 
 
 
-function query(text_query) {
+function query_link(text_query) {
   //const text_query = document.getElementById("text_query").value
   const URL = "http://localhost:8080/query?text="+text_query;
 
