@@ -9,12 +9,14 @@ using namespace std;
 
 using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 
+int *res;
+Trie trie;
+int pos = 0;
+int len_r = 0;
+
 int main() {
 	// Carregamos a Trie contendo os dados
-	Trie trie = Trie("teste.txt");
-	int *res;
-	int pos = 0;
-	int len_r = 0;
+	trie = Trie("teste.txt");
 	
     // HTTP-server at port 8080 using 1 thread
     // Unless you do more heavy non-threaded processing in the resources,
@@ -30,7 +32,7 @@ int main() {
         auto query_fields = request->parse_query_string();
         auto it = query_fields.find("text"); 
         // criamos html do div 'output'
-		stream = make_html(TRIE, it->second, res, len_r, pos);
+		stream = make_html(trie, it->second, res, len_r, pos);
         // enviamos para o javascript
         response->write(stream);
     };
@@ -74,25 +76,24 @@ string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 	string aux = query + "####################";
 	for(int i = 0; i < 23; i++) head = head + aux[i];
 	
-	if(head = "cpp_server_show_more"){
+	if(head == "cpp_server_show_more"){
 		// abrimos mais 20 titulos a ser mostrados
 		return show_more(res, len_r, pos);
 	}
-	else if(head = "cpp_server_open_page"){
+	else if(head == "cpp_server_open_page"){
 		// abrimos e retornamos o artigo de dadoId
 		aux = "";
-		for(i = 21; i < query.size(); i++)
+		for(int i = 21; i < query.size(); i++)
 			aux = aux + query[i];
 		
-		return open_page(aux; res);
+		return open_page(aux, res);
 	}
 	
 	// o caso geral fazemos as buscas pela engine
 	// recebemos e tratamos a entrada requisitada
 	// separamos a contamos as palavras distintas
 	aux = "";
-	size = 0;
-	int size;			// numero de palavras requisitadas
+	int size = 0;		// numero de palavras requisitadas
 	string keys[30];	// array de palavras (keys) separadas
 	query = query + ' ';
 	for(auto c: query){
@@ -116,7 +117,7 @@ string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 	// caso em que o resultado da busca e vazio
 	if(len_r == 0){
 		aux = aux + "Sorry! No results were found.\n";
-		aux = aux + trie.print_sugest(query);
+		aux = aux + trie.sugest(query);
 		
 		return aux;
 	}
@@ -132,11 +133,10 @@ string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 string show_more(int *&res, int len_r, int &pos){
 	// abrimos mais 20 titulos a ser mostrados
 	string aux;
-	aux = "\n.. About " + to_string(len_r) + " results in ";
-	aux = aux + to_string(chrono::duration <double> (diff).count()) + " seconds.\n\n";
+	aux = "\n.. About " + to_string(len_r) + " results";
+	// exibimos os resultados a cada 020
+	// geramos o link d abrir as paginas
 	for(; pos < end; pos++){
-		// geramos o link d abrir as paginas
-	    // exibimos os resultados a cada 020
 		aux = aux + "<a href =\"http://localhost:8080/query?text=cpp_server_open_page";
 		aux = aux + to_string(pos + 1) + "\">" + get_title(pos, res) + "</a></br>";
 		
