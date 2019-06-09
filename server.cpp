@@ -75,7 +75,7 @@ string make_html(Trie trie, string query, int *&res, int &len_r, int &pos){
 	// exibimos sugestões de palavras semelhantes
 	// caso em que o resultado da busca e vazio
 	if(len_r == 0){
-		aux = aux + "Sorry! No results were found.\n";
+		aux = aux + "Sorry! No results were found.</br></br>";
 		aux = aux + trie.sugest(query);
 		
 		return aux;
