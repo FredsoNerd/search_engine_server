@@ -108,8 +108,8 @@ int main() {
         auto query_fields = request->parse_query_string();
         auto it = query_fields.find("text"); 
         // criamos html do div 'output'
-        string res = make_html(trie, it->second, res, len_r, pos);
-        cout << res;
+        string html = make_html(trie, it->second, res, len_r, pos);
+        cout << html;
 		stream << "{\"res\":" << res << "}";
         // enviamos para o javascript
         response->write(stream);
