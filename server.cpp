@@ -17,12 +17,12 @@ int len_r = 0;
 string show_more(int *&res, int len_r, int &pos){
 	// abrimos mais 20 titulos a ser mostrados
 	string aux;
-	aux = "\n.. About " + to_string(len_r) + " results";
+	aux = "\n.. About " + to_string(len_r) + " results</br></br>";
 	// exibimos os resultados a cada 020
 	// geramos o link d abrir as paginas
 	for(; pos < len_r; pos++){
 		aux = aux + "<a href =\"http://localhost:8080/query?text=cpp_server_open_page";
-		aux = aux + to_string(pos + 1) + "\">" + get_title(pos, res) + "</a></br>";
+		aux = aux + to_string(pos + 1) + "\"> Title: " + get_title(pos, res) + "</a></br>";
 		
 		if(pos + 1 == len_r || (pos > 0 && (pos + 1) % 20 == 0)){
 			return aux;
