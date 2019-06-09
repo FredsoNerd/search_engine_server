@@ -30,68 +30,6 @@ struct Node{
 		}
 		return index;
 	}
-	
-	void serialize(ofstream &out){
-		// serializamos recursivamente os nodes
-		// "¬": node nullptr
-		// "?": node sem dado
-		// "_": node sem filhos
-		
-		// sobre a serializacao do dado no node
-		if(pages == nullptr) out << "? ";
-		else{
-			out << size << " ";
-			for(int i = 0; i < size; i++)
-				out << pages[i] << " " ;
-		}
-		
-		// sobre a iteracao para todos os filhos
-		bool leaf = true; 		// node eh folha
-		for(int i = 0; i < 37; i++) {
-			if(pChild[i] != nullptr){
-				leaf = false; break;
-			}
-		}
-		// caso folha interrompemos a iteracao
-		if(leaf){out << "_ "; return;}
-		// iteramos para filhos recursivamente
-		for(int i = 0; i < 37; i++){
-			if(pChild[i] == nullptr) out << "¬ ";
-			else pChild[i]->serialize(out);
-		}
-	}
-	
-	void deserialize(ifstream &in, string &input){
-		// serializamos recursivamente os nodes
-		// "¬": node nullptr
-		// "?": node sem dado
-		// "_": node sem filhos
-		if(input[0] != '?'){
-			// certamente existe um linha de dados
-			// criando strings que receberao valor
-			int size = stoi(input);
-			// carrego array das colunas restantes
-			pages = new int[size];
-			this->size = size;
-			for(int i = 0; i < size; i++){
-				in >> input;
-				pages[i] = stoi(input);
-			}
-		}
-		
-		// parte da serializacao sobre os children
-		in >> input;
-		if(input[0] != '_'){
-			for(int i = 0; i < 37; i++){
-				if(input[0] != '¬' && input != ""){
-					pChild[i] = new Node();
-					(pChild[i])->deserialize(in, input);
-					continue;
-				}
-				in >> input;
-			}
-		}else in >> input;
-	}
 };
 
 class Trie{
