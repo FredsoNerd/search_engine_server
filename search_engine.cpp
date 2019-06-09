@@ -234,27 +234,6 @@ class Trie{
 		}
 		return w;
 	}
-	
-	
-	void save(string filename){
-		// abrimos o arquivo para a serializacao
-		// executamos a primeira serie recursiva
-		ofstream out;
-		out.open(filename);
-		pRoot->serialize(out);
-		out.close();
-	}
-	
-	void load(string filename){
-		// acessamos o arquivo da serializacao
-		// executamos a primeira serie recursiva
-		ifstream in;
-		string line;
-		in.open(filename);
-		in >> line;
-		pRoot->deserialize(in, line);
-		in.close();
-	}
 };
 
 string get_page(string page, int *res){
