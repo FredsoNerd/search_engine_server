@@ -108,7 +108,7 @@ int main() {
         auto query_fields = request->parse_query_string();
         auto it = query_fields.find("text"); 
         // criamos html do div 'output'
-		stream << make_html(trie, it->second, res, len_r, pos);
+		stream << "{\"res\":" make_html(trie, it->second, res, len_r, pos) << "}";
         // enviamos para o javascript
         response->write(stream);
     };
